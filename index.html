@@ -662,7 +662,7 @@ async function startCall(){
   try{tok=await fetch(RTSESS,{method:'POST',headers:H,body:'{}'}).then(function(r){return r.json();});}catch(e){setState('error');startBtn.classList.remove('pha-hidden');return;}
   if(!tok||!tok.client_secret){setState('error');startBtn.classList.remove('pha-hidden');return;}
   var EPH=tok.client_secret,model=tok.model||'gpt-realtime';
-  try{micStream=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){setState('nomic');startBtn.classList.remove('pha-hidden');return;}
+  try{micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});}catch(e){setState('nomic');startBtn.classList.remove('pha-hidden');return;}
   pc=new RTCPeerConnection();
   if(!remoteAudio){remoteAudio=document.createElement('audio');remoteAudio.autoplay=true;remoteAudio.id='pha-rtaudio';document.body.appendChild(remoteAudio);}
   pc.ontrack=function(e){remoteAudio.srcObject=e.streams[0];};
@@ -687,7 +687,6 @@ function configureSession(){
     {type:'function',name:'research',description:'Look up current payer rules, CDT coding, or timely filing windows on the web.',parameters:{type:'object',properties:{query:{type:'string'}},required:['query']}}
   ];
   try{dc.send(JSON.stringify({type:'session.update',session:{tools:tools,tool_choice:'auto'}}));}catch(e){}
-  try{dc.send(JSON.stringify({type:'session.update',session:{audio:{input:{transcription:{model:'whisper-1'}}}}}));}catch(e){}
 }
 function handleRT(ev){
   var t=ev.type||'';
