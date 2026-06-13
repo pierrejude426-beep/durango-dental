@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Durango Dental Group — Insurance Coordinator</title>
+<meta name="robots" content="noindex"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#eef2f7; --panel:#ffffff; --ink:#0f1b2d; --ink2:#46566b; --ink3:#7b8aa0;
+  --line:#e2e8f1; --line2:#eef2f7;
+  --teal:#0d9488; --teal-d:#0b7c72; --teal-bg:#e6f5f3;
+  --blue:#2563eb; --blue-bg:#e8effd;
+  --green:#0f9d6b; --green-bg:#e4f6ee;
+  --amber:#c2780c; --amber-bg:#fbf0dc;
+  --red:#d4493f; --red-bg:#fbe7e5;
+  --slate:#64748b; --slate-bg:#eef1f6;
+  --shadow:0 1px 2px rgba(16,27,45,.04),0 8px 24px -14px rgba(16,27,45,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+#boot{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:16px}
+#boot .sp{width:30px;height:30px;border:3px solid var(--line);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#boot .bt{font-size:12px;color:var(--ink3);letter-spacing:.04em}
+#err{display:none;max-width:520px;margin:80px auto;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;text-align:center;box-shadow:var(--shadow)}
+
+.top{background:var(--panel);border-bottom:1px solid var(--line)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 0}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.logo{width:42px;height:42px;border-radius:11px;background:linear-gradient(150deg,var(--teal),#13b3a2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex:none;box-shadow:0 6px 16px -6px rgba(13,148,136,.6)}
+.bname{font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:1.15}
+.bsub{font-size:12px;color:var(--ink3);margin-top:2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip-sg{display:inline-flex;align-items:center;gap:5px;background:var(--blue-bg);color:var(--blue);border-radius:20px;padding:2px 9px;font-size:10.5px;font-weight:600;letter-spacing:.01em}
+.agent{display:flex;align-items:center;gap:14px;flex:none}
+.live{display:inline-flex;align-items:center;gap:7px;background:var(--teal-bg);border:1px solid #c7e9e4;border-radius:22px;padding:7px 13px}
+.live .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 0 rgba(13,148,136,.5);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(13,148,136,.45)}70%{box-shadow:0 0 0 9px rgba(13,148,136,0)}100%{box-shadow:0 0 0 0 rgba(13,148,136,0)}}
+.live .lt{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--teal-d)}
+.agent .ag{text-align:right}
+.agent .agn{font-size:13px;font-weight:600}
+.agent .agd{font-size:11px;color:var(--ink3);margin-top:1px}
+.prepbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line2);font-size:12px;color:var(--ink2);flex-wrap:wrap}
+.prepbar b{color:var(--ink);font-weight:600}
+.simnote{display:inline-flex;align-items:center;gap:6px;color:var(--ink3);font-size:11px}
+.simnote .sd{width:6px;height:6px;border-radius:50%;background:var(--ink3)}
+
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-top:18px;overflow-x:auto}
+.tab{appearance:none;background:none;border:none;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:500;color:var(--ink3);padding:12px 16px;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s}
+.tab:hover{color:var(--ink2)}
+.tab.active{color:var(--ink);border-bottom-color:var(--teal);font-weight:600}
+.view{display:none;padding:24px 0 60px;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px 18px;box-shadow:var(--shadow)}
+.tile .tk{display:flex;align-items:center;gap:7px;margin-bottom:11px}
+.tile .tdot{width:7px;height:7px;border-radius:2px}
+.tile .tv{font-size:29px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.tile .tsub{font-size:11.5px;color:var(--ink3);margin-top:7px;line-height:1.4}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 19px;border-bottom:1px solid var(--line2)}
+.card-h .ct{font-size:14px;font-weight:600}
+.card-h .cd{font-size:11.5px;color:var(--ink3)}
+.grid2{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-top:14px}
+
+.leak{padding:19px}
+.leak .lh{font-size:14.5px;font-weight:600;margin-bottom:3px}
+.leak .lsub{font-size:12px;color:var(--ink3);margin-bottom:18px}
+.leakrow{margin-bottom:16px}
+.leakrow .ll{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.leakrow .lname{font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px}
+.leakrow .ltag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:2px 8px;border-radius:20px}
+.bar{display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--line2)}
+.seg{height:100%;display:flex;align-items:center;padding:0 9px;font-size:11px;font-weight:600;color:#fff;white-space:nowrap;min-width:0;overflow:hidden}
+.legend{display:flex;flex-wrap:wrap;gap:14px 18px;margin-top:14px;padding-top:15px;border-top:1px solid var(--line2)}
+.lg{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink2)}
+.lg .sw{width:11px;height:11px;border-radius:3px}
+.lg b{color:var(--ink);font-weight:600}
+.leakfoot{margin-top:15px;background:var(--slate-bg);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--ink2);line-height:1.55}
+.leakfoot b{color:var(--ink)}
+
+.na{padding:8px 19px 16px}
+.na-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--line2)}
+.na-item:last-child{border-bottom:none}
+.na-ic{width:30px;height:30px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px}
+.na-b{flex:1;min-width:0}
+.na-t{font-size:13px;font-weight:500;line-height:1.4}
+.na-d{font-size:11.5px;color:var(--ink3);margin-top:2px}
+.na-act{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:7px;white-space:nowrap;align-self:center}
+
+.feed{padding:6px 19px 14px;max-height:340px;overflow:auto}
+.fe{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line2)}
+.fe:last-child{border-bottom:none}
+.fe .fd{width:9px;height:9px;border-radius:50%;flex:none;margin-top:4px}
+.fe .ft{font-size:12.5px;line-height:1.45;color:var(--ink)}
+.fe .fm{font-size:10.5px;color:var(--ink3);margin-top:2px}
+
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);font-weight:500;padding:11px 16px;border-bottom:1px solid var(--line);background:var(--line2)}
+.tbl td{padding:13px 16px;border-bottom:1px solid var(--line2);font-size:13px;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .pt{font-weight:600}
+.tbl .sub{font-size:11.5px;color:var(--ink3);margin-top:3px;line-height:1.4}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.bdot{width:6px;height:6px;border-radius:50%}
+.right{text-align:right}
+
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.statchip{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 16px;box-shadow:var(--shadow);min-width:150px}
+.statchip .sk{display:flex;align-items:center;gap:6px}
+.statchip .sv{font-size:22px;font-weight:600;margin-top:6px;letter-spacing:-.01em}
+
+.scrubgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scrub{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:var(--shadow)}
+.scrub .sh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.scrub .stitle{font-size:13.5px;font-weight:600}
+.scrub .smeta{font-size:11px;color:var(--ink3);margin-top:2px}
+.scrub .row{display:flex;gap:9px;margin-top:9px;font-size:12px;line-height:1.5}
+.scrub .ri{width:18px;flex:none;color:var(--ink3);font-family:'IBM Plex Mono',monospace;font-size:11px;padding-top:1px}
+.scrub .rl{color:var(--ink2)}
+.scrub .rl b{color:var(--ink);font-weight:600}
+.prevpill{background:var(--green-bg);color:var(--green);font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+
+.den{border:1px solid var(--line);border-radius:13px;margin-bottom:11px;background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
+.den-h{display:flex;align-items:center;gap:14px;padding:15px 17px;cursor:pointer;transition:background .12s}
+.den-h:hover{background:var(--line2)}
+.den-claim{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ink2);width:74px;flex:none}
+.den-main{flex:1;min-width:0}
+.den-pt{font-size:13.5px;font-weight:600}
+.den-meta{font-size:11.5px;color:var(--ink3);margin-top:2px}
+.den-amt{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;text-align:right}
+.den-chev{color:var(--ink3);font-size:13px;transition:transform .2s;flex:none}
+.den.open .den-chev{transform:rotate(90deg)}
+.den-body{display:none;border-top:1px solid var(--line2);padding:18px 19px;background:#fbfcfe}
+.den.open .den-body{display:block}
+.letter{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:18px 20px}
+.letter .lsubj{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--ink)}
+.letter pre{font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;line-height:1.65;color:var(--ink2);white-space:pre-wrap;word-wrap:break-word}
+.atts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.att{display:inline-flex;align-items:center;gap:6px;background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:500;padding:5px 10px;border-radius:8px}
+.den-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.sendbtn{appearance:none;border:none;font-family:inherit;cursor:pointer;background:var(--teal);color:#fff;font-size:12.5px;font-weight:600;padding:10px 18px;border-radius:9px;transition:background .15s}
+.sendbtn:hover{background:var(--teal-d)}
+.sendbtn:disabled{background:var(--slate);cursor:default;opacity:.8}
+.den-note{font-size:11.5px;color:var(--ink3)}
+
+.arbars{padding:17px 19px}
+.arbar{margin-bottom:15px}
+.arbar:last-child{margin-bottom:0}
+.arbar .al{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-size:12.5px}
+.arbar .alabel{color:var(--ink2);font-weight:500}
+.arbar .aval{font-family:'IBM Plex Mono',monospace;font-weight:600}
+.arbar .acnt{color:var(--ink3);font-size:11px;font-weight:400;margin-left:7px}
+.artrack{height:11px;background:var(--line2);border-radius:7px;overflow:hidden}
+.arfill{height:100%;border-radius:7px}
+
+.foot{border-top:1px solid var(--line);padding:22px 0 40px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.foot .pw{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink2)}
+.foot .pw .pm{width:22px;height:22px;border-radius:6px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.foot .fr{font-size:11px;color:var(--ink3);max-width:520px;text-align:right;line-height:1.5}
+
+@media(max-width:860px){
+  .tiles{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+  .scrubgrid{grid-template-columns:1fr}
+  .agent .ag{display:none}
+}
+</style>
+</head>
+<body>
+<div id="boot"><div class="sp"></div><div class="bt">Connecting to the practice data layer…</div></div>
+<div id="err">
+  <div style="font-size:15px;font-weight:600;margin-bottom:8px">Could not reach the data layer</div>
+  <div style="font-size:13px;color:var(--ink3)" id="errmsg"></div>
+</div>
+
+<div class="top">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">D</div>
+        <div>
+          <div class="bname" id="hName">Durango Dental Group</div>
+          <div class="bsub">
+            <span id="hAddr">3140 S Durango Dr, Ste 100</span>
+            <span class="chip-sg">◆ <span id="hNet">Smile Generation</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="agent">
+        <div class="ag">
+          <div class="agn">Insurance Coordinator</div>
+          <div class="agd" id="hDate">—</div>
+        </div>
+        <div class="live"><span class="dot"></span><span class="lt">Working now</span></div>
+      </div>
+    </div>
+    <div class="prepbar">
+      <div>Prepared for <b id="hOM">Brynna Devinny</b>, Office Manager &nbsp;·&nbsp; <span id="hPhone">(702) 362-1856</span></div>
+      <div class="simnote"><span class="sd"></span> Live demo on a simulated patient ledger, populated with Durango's public profile</div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="elig">Eligibility</button>
+      <button class="tab" data-tab="scrub">Claim scrubbing</button>
+      <button class="tab" data-tab="denials">Denials &amp; appeals</button>
+      <button class="tab" data-tab="ar">A/R follow-up</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="view active" id="v-overview"></div>
+  <div class="view" id="v-elig"></div>
+  <div class="view" id="v-scrub"></div>
+  <div class="view" id="v-denials"></div>
+  <div class="view" id="v-ar"></div>
+
+  <div class="foot">
+    <div class="pw"><span class="pm">P</span> Powered by <b style="color:var(--ink);font-weight:600">&nbsp;Phare</b></div>
+    <div class="fr">This dashboard is reading live from the practice's claims data layer. Once connected to your practice management system and clearinghouse, every number here updates on its own.</div>
+  </div>
+</div>
+
+<script>
+const SB='https://cykwjedvfmopwmgsmfak.supabase.co';
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5a3dqZWR2Zm1vcHdtZ3NtZmFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5ODE3NDMsImV4cCI6MjA5NjU1Nzc0M30.PHHGO34qyV95dSg_7sftx2R3OuLdC7sOlWaAtitvC7s';
+const SLUG='durango-dental';
+
+async function rpc(fn, extra){
+  const r = await fetch(SB+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:ANON,Authorization:'Bearer '+ANON,'Content-Type':'application/json'},body:JSON.stringify(Object.assign({p_practice_slug:SLUG},extra||{}))});
+  if(!r.ok) throw new Error(fn+' returned '+r.status);
+  return await r.json();
+}
+const money = n => '$'+Math.round(Number(n||0)).toLocaleString('en-US');
+const num = n => Math.round(Number(n||0)).toLocaleString('en-US');
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function relTime(ts){
+  const d=Math.max(0,(Date.now()-new Date(ts).getTime())/60000);
+  if(d<1)return 'just now';
+  if(d<60)return Math.round(d)+' min ago';
+  const h=d/60; if(h<24)return Math.round(h)+' hr ago';
+  return Math.round(h/24)+' d ago';
+}
+const STBADGE={
+  verified:{bg:'var(--green-bg)',c:'var(--green)',d:'var(--green)',t:'Verified'},
+  flag:{bg:'var(--amber-bg)',c:'var(--amber)',d:'var(--amber)',t:'Needs review'},
+  action:{bg:'var(--red-bg)',c:'var(--red)',d:'var(--red)',t:'Action needed'}
+};
+const NODECOLOR={teal:'var(--teal)',green:'var(--green)',amber:'var(--amber)',gray:'var(--slate)'};
+
+let S={};
+
+async function boot(){
+  try{
+    const [m,elig,scr,den,ar,act]=await Promise.all([
+      rpc('dental_metrics'),rpc('dental_eligibility_today'),rpc('dental_scrubs'),
+      rpc('dental_denials'),rpc('dental_ar'),rpc('dental_activity',{p_limit:10})
+    ]);
+    S={m,elig,scr,den,ar,act};
+    paintHeader(m);
+    renderOverview();renderElig();renderScrub();renderDenials();renderAR();
+    const b=document.getElementById('boot'); if(b)b.remove();
+  }catch(e){
+    document.getElementById('boot').style.display='none';
+    document.getElementById('err').style.display='block';
+    document.getElementById('errmsg').textContent=String(e&&e.message||e);
+  }
+}
+
+function paintHeader(m){
+  if(!m)return;
+  const set=(id,v)=>{const el=document.getElementById(id); if(el&&v)el.textContent=v;};
+  set('hName',m.practice); set('hAddr',m.address); set('hNet',m.network);
+  set('hOM',m.office_manager); set('hPhone',m.phone);
+  document.getElementById('hDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+}
+
+function renderOverview(){
+  const m=S.m||{}, den=(S.den&&S.den.items)||[], elig=S.elig||[];
+  const tiles=[
+    {dot:'var(--green)',k:'Recovered this month',v:money(m.recovered_mtd),sub:'Denials appealed and paid, plus underpayments corrected'},
+    {dot:'var(--teal)',k:'Denials prevented',v:money(m.prevented_mtd),sub:(m.errors_caught_mtd||0)+' claims fixed before they ever left the office'},
+    {dot:'var(--blue)',k:'Staff hours saved',v:num(m.hours_saved),sub:'Eligibility checks, scrubbing and follow-up, automated'},
+    {dot:'var(--slate)',k:'Claims in flight',v:num(m.claims_in_flight),sub:'Submitted and tracked to payment right now'}
+  ];
+  const tilesHtml='<div class="tiles">'+tiles.map(t=>`
+    <div class="tile">
+      <div class="tk"><span class="tdot" style="background:${t.dot}"></span><span class="k">${t.k}</span></div>
+      <div class="tv num">${t.v}</div>
+      <div class="tsub">${t.sub}</div>
+    </div>`).join('')+'</div>';
+
+  const total=Number(m.denied_total||1);
+  const pct=v=>Math.max(0,(Number(v||0)/total*100));
+  const segTxt=(v,lab)=> (pct(v)>14? `${lab} ${money(v)}` : '');
+  const leak=`
+   <div class="card" style="margin-top:14px">
+    <div class="leak">
+      <div class="lh">The same ${money(m.denied_total)} in denials, handled two ways</div>
+      <div class="lsub">${num(m.denied_count)} denied or downgraded claims this month. Here is where that money goes with the coordinator working them, versus a typical front desk.</div>
+
+      <div class="leakrow">
+        <div class="ll">
+          <div class="lname"><span style="width:8px;height:8px;border-radius:2px;background:var(--teal);display:inline-block"></span> With the Insurance Coordinator</div>
+          <div class="ltag" style="background:var(--green-bg);color:var(--green)">${m.capture_pct}% captured</div>
+        </div>
+        <div class="bar">
+          <div class="seg" style="background:var(--green);width:${pct(m.leak_recovered)}%">${segTxt(m.leak_recovered,'Recovered')}</div>
+          <div class="seg" style="background:var(--teal);width:${pct(m.leak_working)}%">${segTxt(m.leak_working,'Working')}</div>
+          <div class="seg" style="background:var(--slate);width:${pct(m.leak_adjusted)}%">${segTxt(m.leak_adjusted,'Adjusted')}</div>
+        </div>
+      </div>
+
+      <div class="leakrow">
+        <div class="ll">
+          <div class="lname"><span style="width:8px;height:8px;border-radius:2px;background:var(--red);display:inline-block"></span> A typical practice</div>
+          <div class="ltag" style="background:var(--red-bg);color:var(--red)">${Math.round(Number(m.typical_abandoned)/total*100)}% lost</div>
+        </div>
+        <div class="bar">
+          <div class="seg" style="background:var(--green);opacity:.55;width:${pct(m.typical_chased)}%">${segTxt(m.typical_chased,'Chased down')}</div>
+          <div class="seg" style="background:var(--red);width:${pct(m.typical_abandoned)}%">${segTxt(m.typical_abandoned,'Written off')}</div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="lg"><span class="sw" style="background:var(--green)"></span> Recovered, paid in full</div>
+        <div class="lg"><span class="sw" style="background:var(--teal)"></span> Working, appeal in motion</div>
+        <div class="lg"><span class="sw" style="background:var(--slate)"></span> Correctly adjusted off</div>
+        <div class="lg"><span class="sw" style="background:var(--red)"></span> Abandoned, money lost</div>
+      </div>
+
+      <div class="leakfoot">At Durango's claim volume, roughly <b>${money(m.annual_leak)} a year</b> moves through denials and aging A/R. The coordinator is currently recovering <b>${m.capture_pct}%</b> of what a typical office leaves on the table.</div>
+    </div>
+   </div>`;
+
+  const na=[];
+  den.filter(d=>d.recovery_status==='appeal_ready').forEach(d=>na.push({
+    ic:'📝',bg:'var(--amber-bg)',t:'Appeal ready to send',
+    d:`${esc(d.claim_no)} · ${esc(d.procedure_label)} · ${esc(d.payer)} · ${esc(d.provider||'')}`,
+    amt:money(d.amount),act:'Review',ac:'var(--amber)',abg:'var(--amber-bg)'
+  }));
+  elig.filter(e=>e.status==='action').forEach(e=>na.push({
+    ic:'⚠',bg:'var(--red-bg)',t:'Terminated coverage on the schedule today',
+    d:`${esc(e.patient)} · ${esc(e.appt_time)} · ${esc(e.provider||'')} · collect at desk`,
+    amt:'',act:'Front desk',ac:'var(--red)',abg:'var(--red-bg)'
+  }));
+  elig.filter(e=>e.status==='flag').slice(0,2).forEach(e=>na.push({
+    ic:'◷',bg:'var(--amber-bg)',t:esc(e.patient)+' · benefit flag before the visit',
+    d:esc((e.flag_note||'').split('.')[0]),amt:'',act:e.appt_time,ac:'var(--ink3)',abg:'var(--line2)'
+  }));
+  const naHtml=`
+   <div class="card">
+     <div class="card-h"><div class="ct">Needs your attention</div><div class="cd">${na.length} items</div></div>
+     <div class="na">${na.slice(0,5).map(i=>`
+       <div class="na-item">
+         <div class="na-ic" style="background:${i.bg}">${i.ic}</div>
+         <div class="na-b"><div class="na-t">${i.t}</div><div class="na-d">${i.d}</div></div>
+         ${i.amt?`<div class="num" style="font-weight:600;font-size:13px;align-self:center">${i.amt}</div>`:''}
+         <div class="na-act" style="background:${i.abg};color:${i.ac}">${i.act}</div>
+       </div>`).join('')}</div>
+   </div>`;
+
+  const act=S.act||[];
+  const feedHtml=`
+   <div class="card">
+     <div class="card-h"><div class="ct">Live activity</div><div class="cd">Last few hours</div></div>
+     <div class="feed">${act.map(a=>`
+       <div class="fe">
+         <span class="fd" style="background:${NODECOLOR[a.node]||'var(--slate)'}"></span>
+         <div><div class="ft">${esc(a.message)}</div><div class="fm">${relTime(a.created_at)}${a.ref_claim_no?' · '+esc(a.ref_claim_no):''}</div></div>
+       </div>`).join('')}</div>
+   </div>`;
+
+  document.getElementById('v-overview').innerHTML=tilesHtml+leak+`<div class="grid2">${naHtml}${feedHtml}</div>`;
+}
+
+function renderElig(){
+  const rows=S.elig||[];
+  const body=rows.map(e=>{
+    const b=STBADGE[e.status]||STBADGE.verified;
+    const maxr=e.annual_max_remaining!=null?money(e.annual_max_remaining):'—';
+    const flag=(e.status!=='verified'&&e.flag_note)?`<div class="sub">${esc(e.flag_note)}</div>`:'';
+    return `<tr>
+      <td class="num" style="font-weight:600;color:var(--ink2)">${esc(e.appt_time)}</td>
+      <td><span class="pt">${esc(e.patient)}</span>${flag}</td>
+      <td>${esc(e.provider||'')}</td>
+      <td>${esc(e.procedure_label)}</td>
+      <td>${esc(e.payer)}</td>
+      <td class="num">${maxr}</td>
+      <td><span class="badge" style="background:${b.bg};color:${b.c}"><span class="bdot" style="background:${b.d}"></span>${b.t}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('v-elig').innerHTML=`
+    <div class="card">
+      <div class="card-h"><div class="ct">Today's schedule, verified before the chair</div><div class="cd">${rows.length} appointments · checked overnight</div></div>
+      <table class="tbl">
+        <thead><tr><th>Time</th><th>Patient</th><th>Provider</th><th>Procedure</th><th>Payer</th><th>Max left</th><th>Coverage</th></tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderScrub(){
+  const sc=S.scr||{}, sum=sc.summary||{}, items=sc.items||[];
+  const chips=`<div class="chips">
+    <div class="statchip"><div class="sk"><span class="tdot" style="background:var(--blue);width:7px;height:7px;border-radius:2px"></span><span class="k">Scrubbed today</span></div><div class="sv num">${num(sum.scrubbed_today)}</div></div>
+    <div class="statchip"><div class="sk"><span class="tdot" style="background:var(--teal);width:7px;height:7px;border-radius:2px"></span><span class="k">Errors caught</span></div><div class="sv num">${num(sum.caught_today)}</div></div>
+    <div class="statchip"><div class="sk"><span class="tdot" style="background:var(--green);width:7px;height:7px;border-radius:2px"></span><span class="k">Denials prevented</span></div><div class="sv num">${money(sum.protected_today)}</div></div>
+  </div>`;
+  const cards='<div class="scrubgrid">'+items.map(i=>`
+    <div class="scrub">
+      <div class="sh">
+        <div><div class="stitle">${esc(i.issue_type)}</div><div class="smeta">${esc(i.claim_no)} · ${esc(i.procedure_label)} (${esc(i.cdt_code)}) · ${esc(i.provider||'')} · ${esc(i.payer)}</div></div>
+        <span class="prevpill">${money(i.amount_protected)} saved</span>
+      </div>
+      <div class="row"><span class="ri">!</span><span class="rl">${esc(i.issue_detail)}</span></div>
+      <div class="row"><span class="ri" style="color:var(--green)">✓</span><span class="rl"><b>Fixed.</b> ${esc(i.fix_detail)}</span></div>
+    </div>`).join('')+'</div>';
+  document.getElementById('v-scrub').innerHTML=chips+`
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:14px">Every claim is checked against payer rules before submission. Caught today, before they could be denied:</div>`+cards;
+}
+
+function renderDenials(){
+  const dn=S.den||{}, sum=dn.summary||{}, items=dn.items||[];
+  const RB={appeal_ready:{bg:'var(--amber-bg)',c:'var(--amber)',t:'Appeal ready'},resubmitted:{bg:'var(--blue-bg)',c:'var(--blue)',t:'Resubmitted'},paid:{bg:'var(--green-bg)',c:'var(--green)',t:'Recovered'},writeoff:{bg:'var(--slate-bg)',c:'var(--slate)',t:'Adjusted'}};
+  const chips=`<div class="chips">
+    <div class="statchip"><div class="sk"><span class="tdot" style="background:var(--amber);width:7px;height:7px;border-radius:2px"></span><span class="k">Appeals ready</span></div><div class="sv num">${num(sum.ready_to_send)}</div></div>
+    <div class="statchip"><div class="sk"><span class="tdot" style="background:var(--blue);width:7px;height:7px;border-radius:2px"></span><span class="k">Resubmitted</span></div><div class="sv num">${num(sum.resubmitted)}</div></div>
+    <div class="statchip"><div class="sk"><span class="tdot" style="background:var(--green);width:7px;height:7px;border-radius:2px"></span><span class="k">Recovered this month</span></div><div class="sv num">${money(sum.recovered_mtd)}</div></div>
+  </div>`;
+  const rows=items.map((d,ix)=>{
+    const b=RB[d.recovery_status]||RB.appeal_ready;
+    const atts=(d.attachments||[]).map(a=>`<span class="att">▣ ${esc(a)}</span>`).join('');
+    const ready=d.recovery_status==='appeal_ready';
+    const btn=ready?`<button class="sendbtn" onclick="queueAppeal(this)">Send appeal to payer</button>`:`<span class="den-note">${d.recovery_status==='paid'?'Resolved and paid':'Submitted, awaiting payer response'}</span>`;
+    return `<div class="den" id="den${ix}">
+      <div class="den-h" onclick="toggleDen(${ix})">
+        <div class="den-claim">${esc(d.claim_no)}</div>
+        <div class="den-main">
+          <div class="den-pt">${esc(d.patient)} · ${esc(d.procedure_label)}</div>
+          <div class="den-meta">${esc(d.payer)} · ${esc(d.provider||'')} · denied for ${esc(d.denial_reason)}</div>
+        </div>
+        <div>
+          <div class="den-amt num">${money(d.amount)}</div>
+          <div style="text-align:right;margin-top:4px"><span class="badge" style="background:${b.bg};color:${b.c}">${b.t}</span></div>
+        </div>
+        <span class="den-chev">▶</span>
+      </div>
+      <div class="den-body">
+        <div class="letter">
+          <div class="lsubj">${esc(d.appeal_subject||'Appeal letter')}</div>
+          <pre>${esc(d.appeal_body||'')}</pre>
+          ${atts?`<div class="atts">${atts}</div>`:''}
+        </div>
+        <div class="den-actions">${btn}<span class="den-note">Drafted by the coordinator · grounded in the payer's own policy language</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('v-denials').innerHTML=chips+`<div style="font-size:12px;color:var(--ink3);margin-bottom:14px">Each denial is worked automatically. Open one to read the appeal the coordinator already wrote.</div>`+rows;
+}
+function toggleDen(i){document.getElementById('den'+i).classList.toggle('open');}
+function queueAppeal(btn){btn.disabled=true;btn.textContent='Queued to send ✓';}
+
+function renderAR(){
+  const ar=S.ar||{}, buckets=ar.buckets||[], items=ar.items||[];
+  const maxB=Math.max(1,...buckets.map(b=>Number(b.amount||0)));
+  const COL=['var(--green)','var(--teal)','var(--amber)','var(--red)'];
+  const bars=buckets.map((b,i)=>`
+    <div class="arbar">
+      <div class="al"><span class="alabel">${esc(b.bucket)} days<span class="acnt">${num(b.claim_count)} claims</span></span><span class="aval num">${money(b.amount)}</span></div>
+      <div class="artrack"><div class="arfill" style="width:${Math.max(4,Number(b.amount)/maxB*100)}%;background:${COL[i]||'var(--slate)'}"></div></div>
+    </div>`).join('');
+  const SEV={working:{bg:'var(--blue-bg)',c:'var(--blue)',t:'In progress'},escalated:{bg:'var(--amber-bg)',c:'var(--amber)',t:'Escalated'},final:{bg:'var(--red-bg)',c:'var(--red)',t:'Final appeal'}};
+  const rows=items.map(i=>{const s=SEV[i.severity]||SEV.working;return `<tr>
+     <td class="num" style="font-weight:600;color:var(--ink2)">${esc(i.claim_no)}</td>
+     <td>${esc(i.payer)}</td>
+     <td class="num">${num(i.age_days)} days</td>
+     <td>${esc(i.action_status)}</td>
+     <td class="right num" style="font-weight:600">${money(i.amount)}</td>
+     <td><span class="badge" style="background:${s.bg};color:${s.c}">${s.t}</span></td>
+   </tr>`;}).join('');
+  document.getElementById('v-ar').innerHTML=`
+    <div class="grid2" style="margin-top:0">
+      <div class="card">
+        <div class="card-h"><div class="ct">Outstanding A/R by age</div><div class="cd">${money(ar.open)} open · ${money(ar.cleared_60d)} cleared in 60 days</div></div>
+        <div class="arbars">${bars}</div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div class="ct">Aged claims being worked</div><div class="cd">auto follow-up at 30 / 60 / 90</div></div>
+        <table class="tbl"><thead><tr><th>Claim</th><th>Payer</th><th>Age</th><th>Last action</th><th class="right">Amount</th><th>Stage</th></tr></thead><tbody>${rows}</tbody></table>
+      </div>
+    </div>`;
+}
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('v-'+t.dataset.tab).classList.add('active');
+}));
+
+boot();
+</script>
+</body>
+</html>
