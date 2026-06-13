@@ -528,11 +528,14 @@ boot();
 .pha-hsub .pha-dot{width:6px;height:6px;border-radius:50%;background:#0d9488}
 #pha-head button{appearance:none;border:none;background:none;cursor:pointer;font-size:16px;color:#7b8aa0;padding:5px;border-radius:7px;line-height:1}
 #pha-head button:hover{background:#eef2f7}
-#pha-msgs{flex:1;overflow-y:auto;padding:16px 15px;display:flex;flex-direction:column;gap:11px;background:#f6f8fb}
+#pha-msgs{flex:1;overflow-y:auto;padding:16px 15px;display:flex;flex-direction:column;gap:9px;background:#f6f8fb}
 .pha-m{max-width:86%;font-size:13px;line-height:1.5;padding:10px 13px;border-radius:14px;white-space:pre-wrap;word-wrap:break-word}
 .pha-m.bot{align-self:flex-start;background:#fff;border:1px solid #e6ebf2;color:#1f2a3a;border-bottom-left-radius:5px}
 .pha-m.me{align-self:flex-end;background:#0d9488;color:#fff;border-bottom-right-radius:5px}
-.pha-acts{align-self:flex-start;display:flex;flex-wrap:wrap;gap:6px;margin-top:-4px}
+.pha-play{align-self:flex-start;margin-top:-3px;margin-bottom:2px;background:none;border:none;cursor:pointer;color:#7b8aa0;font:500 11px 'IBM Plex Sans',sans-serif;display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:7px}
+.pha-play:hover{color:#0d9488;background:#eef6f5}
+.pha-play.playing{color:#0d9488}
+.pha-acts{align-self:flex-start;display:flex;flex-wrap:wrap;gap:6px}
 .pha-act{background:#e6f5f3;color:#0b7c72;border:1px solid #c7e9e4;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px}
 .pha-typ{align-self:flex-start;display:flex;gap:4px;padding:12px 14px;background:#fff;border:1px solid #e6ebf2;border-radius:14px;border-bottom-left-radius:5px}
 .pha-typ span{width:6px;height:6px;border-radius:50%;background:#b6c2d2;animation:pha-bounce 1.2s infinite}
@@ -550,70 +553,98 @@ boot();
 #pha-mic.live{background:#d4493f;color:#fff;animation:pha-pl 1.2s infinite}
 #pha-send{background:#0d9488;color:#fff}
 #pha-send:hover{background:#0b7c72}
-@media(max-width:480px){#pha-panel{right:8px;bottom:8px;height:calc(100vh - 16px)}#pha-fab span{display:none}}
+@media(max-width:480px){#pha-panel{right:8px;bottom:8px;height:calc(100vh - 16px)}#pha-fab span:last-child{display:none}}
 </style>
 <div id="pha-fab"><span class="pha-pulse"></span><span>Ask the coordinator</span></div>
 <div id="pha-panel" class="pha-hidden">
   <div id="pha-head">
     <div class="pha-ava">P</div>
     <div class="pha-hmeta"><div class="pha-htitle">Insurance Coordinator</div><div class="pha-hsub"><span class="pha-dot"></span>Durango Dental Group · live</div></div>
-    <button id="pha-spk" title="Mute voice">&#128266;</button>
+    <button id="pha-spk" title="Mute auto-voice">&#128266;</button>
     <button id="pha-x" title="Close">&#215;</button>
   </div>
   <div id="pha-msgs"></div>
   <div id="pha-sug"></div>
   <div id="pha-inrow">
-    <textarea id="pha-in" rows="1" placeholder="Ask, or tell me what to do..."></textarea>
-    <button id="pha-mic" title="Speak">&#127897;</button>
+    <textarea id="pha-in" rows="1" placeholder="Ask, speak, or tell me what to do..."></textarea>
+    <button id="pha-mic" title="Speak (OpenAI voice)">&#127897;</button>
     <button id="pha-send" title="Send">&#10148;</button>
   </div>
 </div>
 <script>
 (function(){
-  var SBU='https://cykwjedvfmopwmgsmfak.supabase.co';
-  var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5a3dqZWR2Zm1vcHdtZ3NtZmFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5ODE3NDMsImV4cCI6MjA5NjU1Nzc0M30.PHHGO34qyV95dSg_7sftx2R3OuLdC7sOlWaAtitvC7s';
-  var EP=SBU+'/functions/v1/dental-agent';
-  var fab=document.getElementById('pha-fab'),panel=document.getElementById('pha-panel');
-  var msgsEl=document.getElementById('pha-msgs'),sugEl=document.getElementById('pha-sug');
-  var inEl=document.getElementById('pha-in'),micBtn=document.getElementById('pha-mic'),sendBtn=document.getElementById('pha-send');
-  var spkBtn=document.getElementById('pha-spk'),xBtn=document.getElementById('pha-x');
-  var msgs=[],busy=false,speakOn=true,listening=false,rec=null;
-  var SUG=['Which appeals are ready?','Any coverage issues today?','Draft the appeal for C-5012','What\'s our A/R over 90 days?'];
-  function openP(){panel.classList.remove('pha-hidden');fab.classList.add('pha-hidden');if(!msgs.length)greet();setTimeout(function(){inEl.focus();},80);}
-  function closeP(){panel.classList.add('pha-hidden');fab.classList.remove('pha-hidden');stopTTS();}
-  function greet(){msgs.push({role:'assistant',text:'Hi, I\'m the Insurance Coordinator for Durango Dental Group. Ask me about today\'s eligibility, denials and appeals, or A/R, or tell me to draft an appeal and I\'ll write it and mark it ready. I can also look up current payer rules.'});render();renderSug();}
-  function renderSug(){sugEl.innerHTML='';if(msgs.length>1){sugEl.style.display='none';return;}sugEl.style.display='flex';SUG.forEach(function(s){var b=document.createElement('button');b.className='pha-sug';b.textContent=s;b.onclick=function(){send(s,false);};sugEl.appendChild(b);});}
-  function render(){
-    msgsEl.innerHTML='';
-    msgs.forEach(function(m){
-      var d=document.createElement('div');d.className='pha-m '+(m.role==='assistant'?'bot':'me');d.textContent=m.text;msgsEl.appendChild(d);
-      if(m.actions&&m.actions.length){var a=document.createElement('div');a.className='pha-acts';m.actions.forEach(function(ac){var c=document.createElement('span');c.className='pha-act';c.textContent='\u2713 '+(ac.label||ac.type);a.appendChild(c);});msgsEl.appendChild(a);}
-    });
-    if(busy){var t=document.createElement('div');t.className='pha-typ';t.innerHTML='<span></span><span></span><span></span>';msgsEl.appendChild(t);}
-    msgsEl.scrollTop=msgsEl.scrollHeight;
-  }
-  function send(text,spoken){
-    text=(text||'').trim();if(!text||busy)return;
-    msgs.push({role:'user',text:text});inEl.value='';inEl.style.height='auto';busy=true;render();renderSug();
-    fetch(EP,{method:'POST',headers:{apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'},body:JSON.stringify({practice_slug:'durango-dental',spoken:!!spoken,messages:msgs.map(function(m){return {role:m.role,text:m.text};})})})
+/* pha v2 openai-voice */
+var SBU='https://cykwjedvfmopwmgsmfak.supabase.co';
+var AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5a3dqZWR2Zm1vcHdtZ3NtZmFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5ODE3NDMsImV4cCI6MjA5NjU1Nzc0M30.PHHGO34qyV95dSg_7sftx2R3OuLdC7sOlWaAtitvC7s';
+var H={apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'};
+var EP=SBU+'/functions/v1/dental-agent',TTS=SBU+'/functions/v1/dental-tts',STT=SBU+'/functions/v1/dental-stt';
+var fab=document.getElementById('pha-fab'),panel=document.getElementById('pha-panel');
+var msgsEl=document.getElementById('pha-msgs'),sugEl=document.getElementById('pha-sug');
+var inEl=document.getElementById('pha-in'),micBtn=document.getElementById('pha-mic'),sendBtn=document.getElementById('pha-send');
+var spkBtn=document.getElementById('pha-spk'),xBtn=document.getElementById('pha-x');
+var msgs=[],busy=false,speakOn=true;
+var curAudio=null,recorder=null,chunks=[],recording=false,stream=null;
+var SUG=['Which appeals are ready?','Any coverage issues today?','Draft the appeal for C-5012','What\'s our A/R over 90 days?'];
+function openP(){panel.classList.remove('pha-hidden');fab.classList.add('pha-hidden');if(!msgs.length)greet();setTimeout(function(){inEl.focus();},80);}
+function closeP(){panel.classList.add('pha-hidden');fab.classList.remove('pha-hidden');stopAudio();}
+function greet(){msgs.push({role:'assistant',text:'Hi, I\'m the Insurance Coordinator for Durango Dental Group. Ask me about today\'s eligibility, denials and appeals, or A/R, or tell me to draft an appeal and I\'ll write it and mark it ready. Tap the speaker on any reply to hear it out loud, or use the mic to talk to me.'});render();renderSug();}
+function renderSug(){sugEl.innerHTML='';if(msgs.length>1){sugEl.style.display='none';return;}sugEl.style.display='flex';SUG.forEach(function(s){var b=document.createElement('button');b.className='pha-sug';b.textContent=s;b.onclick=function(){send(s,false);};sugEl.appendChild(b);});}
+function render(){
+  msgsEl.innerHTML='';
+  msgs.forEach(function(m){
+    var d=document.createElement('div');d.className='pha-m '+(m.role==='assistant'?'bot':'me');d.textContent=m.text;msgsEl.appendChild(d);
+    if(m.role==='assistant'){var p=document.createElement('button');p.className='pha-play';p.innerHTML='&#128266; <span>Play</span>';p.onclick=function(){playTTS(m.text,p);};msgsEl.appendChild(p);}
+    if(m.actions&&m.actions.length){var a=document.createElement('div');a.className='pha-acts';m.actions.forEach(function(ac){var c=document.createElement('span');c.className='pha-act';c.textContent='\u2713 '+(ac.label||ac.type);a.appendChild(c);});msgsEl.appendChild(a);}
+  });
+  if(busy){var t=document.createElement('div');t.className='pha-typ';t.innerHTML='<span></span><span></span><span></span>';msgsEl.appendChild(t);}
+  msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+function send(text,spoken){
+  text=(text||'').trim();if(!text||busy)return;
+  msgs.push({role:'user',text:text});inEl.value='';inEl.style.height='auto';busy=true;render();renderSug();
+  fetch(EP,{method:'POST',headers:H,body:JSON.stringify({practice_slug:'durango-dental',spoken:!!spoken,messages:msgs.map(function(m){return {role:m.role,text:m.text};})})})
+    .then(function(r){return r.json();})
+    .then(function(d){busy=false;var reply=d.reply||(d.error?'Sorry, something went wrong.':'Sorry, I could not respond.');msgs.push({role:'assistant',text:reply,actions:d.actions||[]});render();if(spoken&&speakOn)playTTS(reply,null);})
+    .catch(function(){busy=false;msgs.push({role:'assistant',text:'Sorry, I could not reach the service.'});render();});
+}
+function stopAudio(){try{if(curAudio){curAudio.pause();curAudio=null;}}catch(e){}var ps=document.querySelectorAll('.pha-play.playing');for(var i=0;i<ps.length;i++)ps[i].classList.remove('playing');}
+function playTTS(text,btn){
+  stopAudio();if(btn)btn.classList.add('playing');
+  fetch(TTS,{method:'POST',headers:H,body:JSON.stringify({text:text})})
+    .then(function(r){if(!r.ok)throw new Error('tts');return r.blob();})
+    .then(function(blob){var url=URL.createObjectURL(blob);var a=new Audio(url);curAudio=a;a.onended=function(){if(btn)btn.classList.remove('playing');try{URL.revokeObjectURL(url);}catch(e){}};var pr=a.play();if(pr&&pr.catch)pr.catch(function(){if(btn)btn.classList.remove('playing');});})
+    .catch(function(){if(btn)btn.classList.remove('playing');});
+}
+var canRec=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder);
+function pickMime(){var ms=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'];for(var i=0;i<ms.length;i++){try{if(window.MediaRecorder.isTypeSupported(ms[i]))return ms[i];}catch(e){}}return '';}
+function startRec(){
+  stopAudio();
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){
+    stream=s;chunks=[];var mime=pickMime();
+    try{recorder=mime?new MediaRecorder(s,{mimeType:mime}):new MediaRecorder(s);}catch(e){recorder=new MediaRecorder(s);}
+    recorder.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data);};
+    recorder.onstop=function(){var blob=new Blob(chunks,{type:(recorder&&recorder.mimeType)||'audio/webm'});if(stream){stream.getTracks().forEach(function(t){t.stop();});stream=null;}transcribe(blob);};
+    recorder.start();recording=true;micBtn.classList.add('live');
+  }).catch(function(){recording=false;micBtn.classList.remove('live');});
+}
+function stopRec(){try{if(recorder&&recording)recorder.stop();}catch(e){}recording=false;micBtn.classList.remove('live');}
+function transcribe(blob){
+  busy=true;render();
+  var fr=new FileReader();
+  fr.onload=function(){
+    var b64=String(fr.result).split(',')[1]||'';
+    fetch(STT,{method:'POST',headers:H,body:JSON.stringify({audio_b64:b64,mime:blob.type})})
       .then(function(r){return r.json();})
-      .then(function(d){busy=false;var reply=d.reply||(d.error?'Sorry, something went wrong.':'Sorry, I could not respond.');msgs.push({role:'assistant',text:reply,actions:d.actions||[]});render();if(spoken&&speakOn)speak(reply);})
-      .catch(function(){busy=false;msgs.push({role:'assistant',text:'Sorry, I could not reach the service.'});render();});
-  }
-  function speak(t){try{stopTTS();var u=new SpeechSynthesisUtterance(t);u.rate=1.02;window.speechSynthesis.speak(u);}catch(e){}}
-  function stopTTS(){try{window.speechSynthesis.cancel();}catch(e){}}
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(SR){
-    rec=new SR();rec.lang='en-US';rec.interimResults=false;rec.maxAlternatives=1;
-    rec.onresult=function(e){var t=e.results[0][0].transcript;listening=false;micBtn.classList.remove('live');send(t,true);};
-    rec.onend=function(){listening=false;micBtn.classList.remove('live');};
-    rec.onerror=function(){listening=false;micBtn.classList.remove('live');};
-    micBtn.onclick=function(){if(busy)return;if(listening){try{rec.stop();}catch(e){}listening=false;micBtn.classList.remove('live');}else{try{stopTTS();rec.start();listening=true;micBtn.classList.add('live');}catch(e){}}};
-  }else{micBtn.style.display='none';}
-  spkBtn.onclick=function(){speakOn=!speakOn;spkBtn.innerHTML=speakOn?'&#128266;':'&#128263;';if(!speakOn)stopTTS();};
-  xBtn.onclick=closeP;fab.onclick=openP;sendBtn.onclick=function(){send(inEl.value,false);};
-  inEl.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(inEl.value,false);}});
-  inEl.addEventListener('input',function(){inEl.style.height='auto';inEl.style.height=Math.min(120,inEl.scrollHeight)+'px';});
+      .then(function(d){busy=false;var t=((d&&d.text)||'').trim();if(t){send(t,true);}else{render();}})
+      .catch(function(){busy=false;render();});
+  };
+  fr.readAsDataURL(blob);
+}
+if(canRec){micBtn.onclick=function(){if(busy&&!recording)return;if(recording){stopRec();}else{startRec();}};}else{micBtn.style.display='none';}
+spkBtn.onclick=function(){speakOn=!speakOn;spkBtn.innerHTML=speakOn?'&#128266;':'&#128263;';if(!speakOn)stopAudio();};
+xBtn.onclick=closeP;fab.onclick=openP;sendBtn.onclick=function(){send(inEl.value,false);};
+inEl.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(inEl.value,false);}});
+inEl.addEventListener('input',function(){inEl.style.height='auto';inEl.style.height=Math.min(120,inEl.scrollHeight)+'px';});
 })();
 </script>
 </body>
