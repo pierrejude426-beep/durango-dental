@@ -231,6 +231,61 @@ html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',syst
 @media(max-width:860px){.tourcta{padding:10px 14px;font-size:12px}}
 #tour-bar.tb-top{top:24px;bottom:auto}
 #tour-bar .tb-ava.coord{background:linear-gradient(135deg,#2dd4bf,#0d9488)!important;color:#04201c!important}
+/* patient lookup */
+.pt-wrap{max-width:1040px;margin:0 auto}
+.pt-search{position:relative;margin-bottom:22px;z-index:30}
+.pt-searchbar{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0 18px;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s}
+.pt-searchbar:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg)}
+.pt-sicon{color:var(--ink3);flex-shrink:0}
+.pt-searchbar:focus-within .pt-sicon{color:var(--teal)}
+#pt-input{flex:1;border:none;outline:none;background:none;font:500 15px 'IBM Plex Sans',system-ui,sans-serif;color:var(--ink);padding:15px 0}
+#pt-input::placeholder{color:var(--ink3)}
+.pt-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);overflow:hidden;display:none;max-height:344px;overflow-y:auto}
+.pt-results.show{display:block}
+.pt-res{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;border:none;background:none;cursor:pointer;padding:11px 18px;border-bottom:1px solid var(--line2)}
+.pt-res:last-child{border-bottom:none}
+.pt-res:hover{background:var(--teal-bg)}
+.pt-res-nm{font:600 14px 'IBM Plex Sans',sans-serif;color:var(--ink)}
+.pt-res-meta{font:500 12px 'IBM Plex Sans',sans-serif;color:var(--ink3)}
+.pt-nores{padding:16px 18px;color:var(--ink3);font:500 14px 'IBM Plex Sans',sans-serif}
+.pt-empty{text-align:center;padding:64px 22px;color:var(--ink3);font:500 14.5px 'IBM Plex Sans',sans-serif;line-height:1.7;background:var(--panel);border:1px dashed var(--line);border-radius:16px}
+.pt-empty b{color:var(--ink2);font-weight:600}
+.pt-loading{text-align:center;padding:48px;color:var(--ink3);font:500 14px 'IBM Plex Sans',sans-serif}
+.pt-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;animation:ptin .22s ease}
+@keyframes ptin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pt-head{display:flex;align-items:center;gap:16px;padding:20px 24px;background:linear-gradient(135deg,var(--head1),var(--head2))}
+.pt-ava{width:50px;height:50px;border-radius:50%;background:linear-gradient(145deg,#2dd4bf,#0d9488);color:#04231f;display:flex;align-items:center;justify-content:center;font:700 17px 'IBM Plex Sans',sans-serif;flex-shrink:0;letter-spacing:.02em}
+.pt-id{flex:1;min-width:0}
+.pt-name{font:700 19px 'IBM Plex Sans',sans-serif;color:var(--hink);letter-spacing:-.01em}
+.pt-sub{font:500 12px 'IBM Plex Mono',monospace;color:var(--hink2);margin-top:3px}
+.pt-payer{text-align:right;flex-shrink:0}
+.pt-payer-nm{font:600 14px 'IBM Plex Sans',sans-serif;color:var(--hink)}
+.pt-payer-sub{font:500 11px 'IBM Plex Mono',monospace;color:var(--hink2);margin-top:2px}
+.pt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border-bottom:1px solid var(--line)}
+.pt-stat{background:var(--panel);padding:15px 20px}
+.pt-stat-v{font:700 18px 'IBM Plex Sans',sans-serif;color:var(--ink)}
+.pt-stat-l{font:600 10.5px 'IBM Plex Sans',sans-serif;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.pt-appt{display:flex;align-items:center;gap:12px;padding:12px 24px;background:var(--teal-bg);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pt-appt-lbl{font:700 10.5px 'IBM Plex Sans',sans-serif;color:var(--teal-d);text-transform:uppercase;letter-spacing:.06em}
+.pt-appt-val{font:600 13px 'IBM Plex Sans',sans-serif;color:var(--ink)}
+.pt-flag{color:var(--amber);font-weight:500;font-size:12px}
+.pt-cols{display:grid;grid-template-columns:1fr 1fr}
+.pt-col{padding:16px 24px}
+.pt-col:first-child{border-right:1px solid var(--line)}
+.pt-col-h{font:700 11.5px 'IBM Plex Sans',sans-serif;color:var(--ink2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.pt-row{padding:9px 0;border-bottom:1px solid var(--line2)}
+.pt-row:last-child{border-bottom:none}
+.pt-row-main{font:600 13.5px 'IBM Plex Sans',sans-serif;color:var(--ink)}
+.pt-row-meta{font:500 11px 'IBM Plex Mono',monospace;color:var(--ink3);margin-top:2px}
+.pt-row-right{font:600 13px 'IBM Plex Sans',sans-serif;color:var(--ink2);margin-top:4px;display:flex;align-items:center;gap:8px}
+.pt-pill{font:600 10px 'IBM Plex Sans',sans-serif;padding:2px 8px;border-radius:20px;text-transform:capitalize;white-space:nowrap}
+.pt-pill.ok{background:var(--green-bg);color:var(--green)}
+.pt-pill.warn{background:var(--amber-bg);color:var(--amber)}
+.pt-pill.info{background:var(--blue-bg);color:var(--blue)}
+.pt-pill.bad{background:var(--red-bg);color:var(--red)}
+.pt-none{font:500 13px 'IBM Plex Sans',sans-serif;color:var(--ink3);padding:6px 0}
+.pt-footnote{padding:12px 24px;font:500 11px 'IBM Plex Sans',sans-serif;color:var(--ink3);border-top:1px solid var(--line);background:var(--bg)}
+@media(max-width:720px){.pt-stats{grid-template-columns:repeat(2,1fr)}.pt-cols{grid-template-columns:1fr}.pt-col:first-child{border-right:none;border-bottom:1px solid var(--line)}.pt-head{flex-wrap:wrap}.pt-payer{text-align:left;width:100%}}
 </style>
 </head>
 <body>
@@ -271,6 +326,7 @@ html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',syst
       <button class="tab" data-tab="scrub">Claim scrubbing</button>
       <button class="tab" data-tab="denials">Denials &amp; appeals</button>
       <button class="tab" data-tab="ar">A/R follow-up</button>
+      <button class="tab" data-tab="patients">Patients</button>
     </div>
   </div>
 </div>
@@ -281,6 +337,7 @@ html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',syst
   <div class="view" id="v-scrub"></div>
   <div class="view" id="v-denials"></div>
   <div class="view" id="v-ar"></div>
+  <div class="view" id="v-patients"></div>
 
   <div class="foot">
     <div class="pw"><span class="pm">P</span> Powered by <b style="color:var(--ink);font-weight:600">&nbsp;Phare</b></div>
@@ -325,7 +382,7 @@ async function boot(){
     ]);
     S={m,elig,scr,den,ar,act};
     paintHeader(m);
-    renderOverview();renderElig();renderScrub();renderDenials();renderAR();
+    renderOverview();renderElig();renderScrub();renderDenials();renderAR();renderPatients();
     try{var mm=S.m||{};var rdy=((S.den&&S.den.items)||[]).filter(function(d){return d.recovery_status==='appeal_ready';});var tot=rdy.reduce(function(s,d){return s+Number(d.amount||0);},0);var l2,l4,a3;if(rdy.length>=2){l2='Two are ready. A '+rdy[0].procedure_label+' for '+rdy[0].payer+' at '+money(rdy[0].amount)+', and a '+rdy[1].procedure_label+' for '+rdy[1].payer+' at '+money(rdy[1].amount)+'. That is '+money(tot)+' together. Want me to send them?';l4='Done. The '+rdy[0].payer+' appeal for '+money(rdy[0].amount)+' is on its way, with the clinical notes and the policy language attached. I will track their response and flag it the moment they reply.';a3='Yes, send the '+rdy[0].payer+' one first.';}else if(rdy.length===1){l2='One is ready. A '+rdy[0].procedure_label+' for '+rdy[0].payer+' at '+money(rdy[0].amount)+'. Want me to send it?';l4='Done. The '+rdy[0].payer+' appeal for '+money(rdy[0].amount)+' is on its way, with the notes and policy language attached. I will track their response.';a3='Yes, go ahead and send it.';}else{l2='Nothing is waiting right now. Everything is either submitted or already resolved.';l4='There is nothing to send this minute, but I am watching for new denials around the clock.';a3='Got it. Keep an eye out.';}var l6='So far I have recovered '+money(mm.recovered_mtd)+', and prevented another '+money(mm.prevented_mtd)+' in denials by catching '+(mm.errors_caught_mtd||0)+' claims before they ever went out. That is about '+num(mm.hours_saved)+' staff hours I handled for you.';window.__convo=[{who:'akari',voice:'nova',text:'Let me just ask it. Coordinator, what appeals are ready to send right now?'},{who:'coord',voice:'onyx',text:l2},{who:'akari',voice:'nova',text:a3},{who:'coord',voice:'onyx',text:l4},{who:'akari',voice:'nova',text:'Nice. And how are we doing on recovery this month?'},{who:'coord',voice:'onyx',text:l6},{who:'akari',voice:'nova',text:'Perfect. That is the kind of back and forth your team has with it all day, by typing or just talking out loud.'}];window.__convoBlobs=[];window.__convo.forEach(function(c,k){function tg(at){fetch(SB+'/functions/v1/dental-tts',{method:'POST',headers:{apikey:ANON,Authorization:'Bearer '+ANON,'Content-Type':'application/json'},body:JSON.stringify({text:c.text,voice:c.voice})}).then(function(r){return r.ok?r.blob():null;}).then(function(b){if(b){window.__convoBlobs[k]=b;}else if(at<3){setTimeout(function(){tg(at+1);},1000);}}).catch(function(){if(at<3){setTimeout(function(){tg(at+1);},1000);}});}tg(1);});}catch(e){}
     const b=document.getElementById('boot'); if(b)b.remove();
   }catch(e){
@@ -565,7 +622,61 @@ function renderAR(){
     </div>`;
 }
 
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+document./* patient lookup */
+function fmtDate(d){if(!d)return '-';try{var t=new Date(d+'T00:00:00');return t.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
+function ptStatusClass(s){s=(s||'').toLowerCase();if(s==='paid')return 'ok';if(s==='appeal_ready'||s==='denied')return 'warn';if(s==='resubmitted'||s==='appealed'||s==='submitted')return 'info';if(s==='writeoff')return 'bad';return '';}
+function ptStat(l,v){return '<div class="pt-stat"><div class="pt-stat-v">'+esc(String(v))+'</div><div class="pt-stat-l">'+esc(l)+'</div></div>';}
+function renderPatients(){
+  var v=document.getElementById('v-patients');if(!v)return;
+  v.innerHTML='<div class="pt-wrap"><div class="pt-search"><div class="pt-searchbar"><svg class="pt-sicon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><input id="pt-input" type="text" placeholder="Search a patient by name..." autocomplete="off" spellcheck="false"/></div><div id="pt-results" class="pt-results"></div></div><div id="pt-card" class="pt-card-wrap"><div class="pt-empty">Type a name to pull up a patient chart.<br/>Try <b>Grace Liu</b>, <b>Marcus Webb</b>, or <b>Henry Adams</b>.</div></div></div>';
+  var inp=document.getElementById('pt-input');var tmr=null;
+  inp.addEventListener('input',function(){clearTimeout(tmr);var q=inp.value.trim();tmr=setTimeout(function(){ptSearch(q);},170);});
+  inp.addEventListener('focus',function(){if(!inp.value.trim())ptSearch('');});
+  document.addEventListener('click',function(e){var s=document.getElementById('pt-results');if(s&&e.target!==inp&&!s.contains(e.target))s.classList.remove('show');});
+}
+function ptSearch(q){
+  var box=document.getElementById('pt-results');if(!box)return;
+  rpc('dental_patient_search',{p_q:q}).then(function(rows){
+    rows=rows||[];
+    if(!rows.length){box.innerHTML='<div class="pt-nores">No patients match that name.</div>';box.classList.add('show');return;}
+    box.innerHTML=rows.map(function(r){return '<button class="pt-res" onclick="ptOpen(\''+r.id+'\')"><span class="pt-res-nm">'+esc(r.name)+'</span><span class="pt-res-meta">'+esc(r.payer||'')+' &#183; '+esc(r.plan_type||'')+'</span></button>';}).join('');
+    box.classList.add('show');
+  }).catch(function(){box.innerHTML='<div class="pt-nores">Search unavailable right now.</div>';box.classList.add('show');});
+}
+function ptOpen(id){
+  var box=document.getElementById('pt-results');if(box)box.classList.remove('show');
+  var card=document.getElementById('pt-card');if(card)card.innerHTML='<div class="pt-loading">Pulling up the chart...</div>';
+  rpc('dental_patient_profile',{p_id:id}).then(function(p){
+    if(!p){if(card)card.innerHTML='<div class="pt-empty">Could not load that patient.</div>';return;}
+    var inp=document.getElementById('pt-input');if(inp)inp.value=p.name;
+    if(card)card.innerHTML=ptCard(p);
+  }).catch(function(){if(card)card.innerHTML='<div class="pt-empty">Could not load that patient.</div>';});
+}
+function ptCard(p){
+  var initials=(p.name||'').split(' ').map(function(s){return s.charAt(0);}).join('').slice(0,2).toUpperCase();
+  var cov=p.coverage;
+  var covLine=cov?(cov.coverage_status==='active'?'Active':cov.coverage_status==='terminated'?'Terminated':'Needs review'):'On file';
+  var amax=(cov&&cov.annual_max_remaining!=null)?money(cov.annual_max_remaining):'-';
+  var nextAppt=(cov&&cov.upcoming)?(fmtDate(cov.appt_date)+' &#183; '+(cov.appt_time||'')+' &#183; '+(cov.procedure_label||'')):'None scheduled';
+  var h='<div class="pt-card">';
+  h+='<div class="pt-head"><div class="pt-ava">'+esc(initials)+'</div><div class="pt-id"><div class="pt-name">'+esc(p.name)+'</div><div class="pt-sub">'+(p.age?('Age '+p.age+' &#183; '):'')+'DOB '+fmtDate(p.dob)+' &#183; Chart '+esc(p.pms_id||'')+'</div></div><div class="pt-payer"><div class="pt-payer-nm">'+esc(p.payer||'')+'</div><div class="pt-payer-sub">'+esc(p.plan_type||'')+' &#183; ID '+esc(p.member_id||'')+'</div></div></div>';
+  h+='<div class="pt-stats">'+ptStat('Coverage',covLine)+ptStat('Benefits left',amax)+ptStat('Lifetime billed',money(p.total_billed))+ptStat('Open balance',money(p.open_ar))+'</div>';
+  h+='<div class="pt-appt"><span class="pt-appt-lbl">Next visit</span><span class="pt-appt-val">'+esc(nextAppt)+((cov&&cov.flag_note)?(' <span class="pt-flag">'+esc(cov.flag_note)+'</span>'):'')+'</span></div>';
+  h+='<div class="pt-cols"><div class="pt-col"><div class="pt-col-h">Visit history ('+(p.visits||0)+')</div>';
+  if((p.claims||[]).length){h+=p.claims.map(function(c){return '<div class="pt-row"><div class="pt-row-main">'+esc(c.procedure_label)+'</div><div class="pt-row-meta">'+fmtDate(c.date_of_service)+' &#183; '+esc(c.provider||'')+' &#183; '+esc(c.claim_no)+'</div><div class="pt-row-right">'+money(c.billed_amount)+' <span class="pt-pill '+ptStatusClass(c.status)+'">'+esc(c.status)+'</span></div></div>';}).join('');}
+  else h+='<div class="pt-none">No visits on record.</div>';
+  h+='</div><div class="pt-col"><div class="pt-col-h">Insurance activity</div>';
+  var any=false;var ins='';
+  (p.denials||[]).forEach(function(d){any=true;ins+='<div class="pt-row"><div class="pt-row-main">Denied: '+esc(d.procedure_label)+'</div><div class="pt-row-meta">'+esc(d.denial_reason||'')+' &#183; '+esc(d.claim_no)+'</div><div class="pt-row-right">'+money(d.amount)+' <span class="pt-pill '+ptStatusClass(d.recovery_status)+'">'+esc((d.recovery_status||'').replace(/_/g,' '))+'</span></div></div>';});
+  (p.ar||[]).forEach(function(a){any=true;ins+='<div class="pt-row"><div class="pt-row-main">A/R follow-up: '+esc(a.claim_no)+'</div><div class="pt-row-meta">'+esc(a.payer||'')+' &#183; '+(a.age_days||0)+' days &#183; '+esc(a.action_status||'')+'</div><div class="pt-row-right">'+money(a.amount)+'</div></div>';});
+  h+=any?ins:'<div class="pt-none">Nothing outstanding. All claims clean.</div>';
+  h+='</div></div>';
+  h+='<div class="pt-footnote">Sample patient record shown for demonstration. Live charts sync from your practice management system.</div></div>';
+  return h;
+}
+window.ptOpen=ptOpen;
+
+querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
