@@ -219,6 +219,16 @@ html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',syst
 .arfill{box-shadow:inset 0 1px 1px rgba(255,255,255,.3)}
 .leak{padding:21px}
 .foot .pm{box-shadow:0 4px 10px -4px rgba(13,22,38,.4)}
+
+/* cta + edit skin */
+.tourcta{appearance:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(145deg,#2dd4bf,#0d9488);color:#04201c;border:none;font:700 13px 'IBM Plex Sans',sans-serif;padding:11px 20px;border-radius:24px;box-shadow:0 10px 26px -8px rgba(45,212,191,.6);transition:transform .15s,box-shadow .15s;white-space:nowrap}
+.tourcta:hover{transform:translateY(-1px);box-shadow:0 14px 32px -8px rgba(45,212,191,.78)}
+.tourcta-i{font-size:10px}
+.den-btns{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.editbtn{appearance:none;cursor:pointer;background:#fff;color:var(--ink2);border:1px solid var(--line);font:600 12.5px 'IBM Plex Sans',sans-serif;padding:10px 16px;border-radius:9px;transition:all .15s}
+.editbtn:hover{border-color:var(--teal);color:var(--teal)}
+.letter-edit{width:100%;box-sizing:border-box;border:1px solid var(--teal);border-radius:11px;padding:16px 18px;font:400 12.5px 'IBM Plex Sans',sans-serif;line-height:1.65;color:var(--ink);resize:vertical;outline:none;background:#fff;box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+@media(max-width:860px){.tourcta{padding:10px 14px;font-size:12px}}
 </style>
 </head>
 <body>
@@ -241,7 +251,7 @@ html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',syst
           </div>
         </div>
       </div>
-      <div class="agent">
+      <div class="agent"><button class="tourcta" onclick="window.__startTour&&window.__startTour()"><span class="tourcta-i">&#9654;</span> Take the tour</button>
         <div class="ag">
           <div class="agn">Insurance Coordinator</div>
           <div class="agd" id="hDate">·</div>
@@ -504,10 +514,10 @@ function renderDenials(){
       <div class="den-body">
         <div class="letter">
           <div class="lsubj">${esc(d.appeal_subject||'Appeal letter')}</div>
-          <pre>${esc(d.appeal_body||'')}</pre>
+          <pre id="lt${ix}">${esc(d.appeal_body||'')}</pre>
           ${atts?`<div class="atts">${atts}</div>`:''}
         </div>
-        <div class="den-actions">${btn}<span class="den-note">Drafted by the coordinator · grounded in the payer's own policy language</span></div>
+        <div class="den-actions"><div class="den-btns">${btn}${d.appeal_body?`<button class="editbtn" onclick="editAppeal(${ix})">Edit</button>`:''}</div><span class="den-note">Drafted by the coordinator · grounded in the payer's own policy language</span></div>
       </div>
     </div>`;
   }).join('');
@@ -516,6 +526,11 @@ function renderDenials(){
 function toggleDen(i){document.getElementById('den'+i).classList.toggle('open');}
 function queueAppeal(btn){btn.disabled=true;btn.textContent='Queued to send ✓';}
 
+function _denCard(ix){return document.getElementById('den'+ix);}
+function editAppeal(ix){var card=_denCard(ix);var pre=document.getElementById('lt'+ix);if(!card||!pre||card.querySelector('.letter-edit'))return;var ta=document.createElement('textarea');ta.className='letter-edit';ta.value=pre.textContent;pre.style.display='none';pre.parentNode.insertBefore(ta,pre.nextSibling);ta.style.height=Math.min(440,Math.max(170,ta.scrollHeight+8))+'px';var btns=card.querySelector('.den-btns');if(btns){btns.setAttribute('data-prev',btns.innerHTML);btns.innerHTML='<button class="sendbtn" onclick="saveAppeal('+ix+')">Save changes</button><button class="editbtn" onclick="cancelAppeal('+ix+')">Cancel</button>';}ta.focus();}
+function saveAppeal(ix){var card=_denCard(ix);var pre=document.getElementById('lt'+ix);var ta=card?card.querySelector('.letter-edit'):null;if(ta&&pre){pre.textContent=ta.value;ta.parentNode.removeChild(ta);}if(pre)pre.style.display='';_restoreBtns(ix);try{var items=(S.den&&S.den.items)||[];if(items[ix]&&pre)items[ix].appeal_body=pre.textContent;}catch(e){}}
+function cancelAppeal(ix){var card=_denCard(ix);var pre=document.getElementById('lt'+ix);var ta=card?card.querySelector('.letter-edit'):null;if(ta)ta.parentNode.removeChild(ta);if(pre)pre.style.display='';_restoreBtns(ix);}
+function _restoreBtns(ix){var card=_denCard(ix);if(!card)return;var btns=card.querySelector('.den-btns');if(btns){var prev=btns.getAttribute('data-prev');if(prev!=null){btns.innerHTML=prev;btns.removeAttribute('data-prev');}}}
 function renderAR(){
   const ar=S.ar||{}, buckets=ar.buckets||[], items=ar.items||[];
   const maxB=Math.max(1,...buckets.map(b=>Number(b.amount||0)));
@@ -585,7 +600,7 @@ boot();
 .tb-prog i{display:block;height:100%;background:#2dd4bf;width:0;border-radius:2px;transition:width .4s ease}
 @media(max-width:480px){#tour-open{left:10px;bottom:14px}#tour-bar{left:8px;right:8px;transform:none;bottom:10px;max-width:none}.tb-title{max-width:none}}
 </style>
-<button id="tour-open" title="Take a guided tour"><span class="ti">&#9654;</span> Take the tour</button>
+
 <div id="tour-root" class="tour-hidden">
   <div id="tour-dim"></div>
   <div id="tour-spot" style="display:none"></div>
@@ -610,17 +625,20 @@ var SBU='https://cykwjedvfmopwmgsmfak.supabase.co';
 var TK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5a3dqZWR2Zm1vcHdtZ3NtZmFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5ODE3NDMsImV4cCI6MjA5NjU1Nzc0M30.PHHGO34qyV95dSg_7sftx2R3OuLdC7sOlWaAtitvC7s';
 var H={apikey:TK,Authorization:'Bearer '+TK,'Content-Type':'application/json'};
 var TTS=SBU+'/functions/v1/dental-tts';
+function openFirstDen(){var d=document.querySelector('#v-denials .den');if(d)d.classList.add('open');}
 var STEPS=[
- {sel:null,title:'Welcome',text:'Hi, my name is Akari, and I help run this system. In about a minute, I will show you your new insurance coordinator and exactly what it does for Durango Dental Group. Let us take a look.'},
- {sel:'.top',title:'Your command center',text:'This is your command center. It sits on top of your live claim data and works around the clock, so denials and aging claims never slip by unnoticed.'},
- {sel:'.tabs',tab:'overview',title:'Five areas',text:'Everything is organized into five simple areas. I will walk you through each one, starting with the big picture.'},
- {sel:'#v-overview',tab:'overview',title:'Overview',text:'Here is the money story: dollars recovered, denials prevented, your capture rate, and the revenue quietly leaking each year. This is the number that pays for the whole system.'},
- {sel:'#v-elig',tab:'elig',title:'Eligibility',text:'Before a patient ever arrives, I check their insurance, confirm what is covered, and flag anything unusual, so your front desk is never caught off guard.'},
- {sel:'#v-scrub',tab:'scrub',title:'Claim scrubbing',text:'Every claim is scrubbed for errors before it goes out. Fixing a small mistake here is far cheaper than fighting a denial weeks later.'},
- {sel:'#v-denials',tab:'denials',title:'Denials and appeals',text:'When a payer denies a claim, I read the reason, write the appeal letter for you, and mark it ready to send. You simply review and approve.'},
- {sel:'#v-ar',tab:'ar',title:'Accounts receivable',text:'I watch aging claims at thirty, sixty, and ninety days and keep the follow ups moving, so money you have already earned actually reaches your account.'},
- {sel:'#pha-fab',title:'Talk to your coordinator',text:'And any time you have a question, you can just talk to your coordinator, by voice or text, right here. Ask what is ready, or tell it to draft an appeal, and it is handled.'},
- {sel:null,title:'All set',text:'That is your coordinator, and it is already working on this for you. Whenever you are ready, explore any tab, or tap the button in the corner and simply start talking. Welcome aboard.'}
+ {sel:null,title:'Welcome',text:'Hi, my name is Akari. I am the system operator here at Phare, and I am going to walk you through the insurance coordinator we set up for Durango Dental Group and how it would fit into your team.'},
+ {sel:null,title:'About this demo',text:'One thing up front. Everything you see here is sample data we put together for this walkthrough. Once we connect your real systems, these screens fill with your own patients, claims, and numbers. So focus on how it works and what it would do for you, not the figures themselves.'},
+ {sel:'.top',title:'A teammate for your office',text:'Practices lose real money to denied claims and to aging accounts that no one has time to chase. This coordinator works alongside your team on exactly that, quietly in the background, and brings the things that need a person straight to you.'},
+ {sel:'#v-overview .tiles',tab:'overview',title:'Your overview',text:'This is your morning glance. Across the top you can see what was recovered this month, the denials caught before they happened, the staff hours saved, and the claims being tracked right now.'},
+ {sel:'#v-overview .grid2 .card:nth-child(1)',tab:'overview',title:'What needs you',text:'This is the part that matters day to day. Anything that needs a human, like an appeal that is ready to send, or a coverage problem on todays schedule, shows up right here so nothing gets missed.'},
+ {sel:'#v-overview .grid2 .card:nth-child(2)',tab:'overview',title:'What it has done',text:'And right beside it, you can see what the coordinator has actually been doing over the last few hours. It is never a black box. You always know what happened and when.'},
+ {sel:'#v-elig',tab:'elig',title:'Eligibility',text:'Eligibility. Before patients arrive, it checks their coverage and remaining benefits and flags anything unusual, so the front desk is never caught off guard at check in.'},
+ {sel:'#v-scrub',tab:'scrub',title:'Claim scrubbing',text:'Claim scrubbing. It reviews each claim against the payers own rules before it is submitted, and quietly fixes the small errors that turn into denials.'},
+ {sel:'#v-denials .den.open .letter',tab:'denials',run:openFirstDen,title:'Denials and appeals',text:'This is where it does the heavy lifting. When a claim is denied, the coordinator reads the reason, researches the policy, and writes the appeal letter for you. Here is one it already drafted.'},
+ {sel:'#v-denials .den.open .den-actions',tab:'denials',run:openFirstDen,title:'Review, edit, send',text:'You are not writing appeals from scratch. You read what it wrote, edit anything you want, and send it to the payer in one click. The work is done. You are simply approving it.'},
+ {sel:'#pha-fab',title:'Talk to it anytime',text:'And any time, you can talk to the coordinator directly, by voice or text, to ask what is pending, or to have it take care of something for you.'},
+ {sel:null,title:'That is the idea',text:'So that is the coordinator. It works your claims in the background, shows you clearly what needs you, and keeps a record of everything it does. With your real data connected, this becomes your day to day. Thank you for the time.'}
 ];
 var root=el('tour-root'),dim=el('tour-dim'),spot=el('tour-spot'),bar=el('tour-bar'),openB=el('tour-open');
 var i=0,audio=null,muted=false,cache={},curEl=null,advTimer=null;
@@ -629,7 +647,7 @@ function clamp(n){return Math.max(0,Math.min(STEPS.length-1,n));}
 function setSpeaking(b){bar.classList.toggle('speaking',b);}
 function positionSpot(e){var r=e.getBoundingClientRect();var pad=8;spot.style.top=(r.top-pad)+'px';spot.style.left=(r.left-pad)+'px';spot.style.width=(r.width+pad*2)+'px';spot.style.height=(r.height+pad*2)+'px';}
 function applyTarget(s){var e=s.sel?D.querySelector(s.sel):null;if(e){curEl=e;try{e.scrollIntoView({behavior:'smooth',block:'center'});}catch(x){}spot.style.display='block';dim.style.display='none';setTimeout(function(){if(curEl===e)positionSpot(e);},s.tab?260:40);}else{curEl=null;spot.style.display='none';dim.style.display='block';}}
-function show(n){i=clamp(n);var s=STEPS[i];el('tb-title').textContent=s.title;el('tb-prog-i').style.width=Math.round((i+1)/STEPS.length*100)+'%';if(s.tab)go(s.tab);setTimeout(function(){applyTarget(s);},s.tab?300:30);playStep(s.text,i);}
+function show(n){i=clamp(n);var s=STEPS[i];el('tb-title').textContent=s.title;el('tb-prog-i').style.width=Math.round((i+1)/STEPS.length*100)+'%';if(s.tab)go(s.tab);setTimeout(function(){if(s.run){try{s.run();}catch(x){}}applyTarget(s);},s.tab?320:30);playStep(s.text,i);}
 function stopAudio(){try{if(audio){audio.pause();audio=null;}}catch(x){}}
 function adv(idx){if(idx!==i||root.classList.contains('tour-hidden'))return;if(i<STEPS.length-1)show(i+1);else closeTour();}
 function playStep(text,idx){stopAudio();clearTimeout(advTimer);setSpeaking(false);var dur=Math.max(4000,text.length*68);advTimer=setTimeout(function(){adv(idx);},dur);if(muted)return;var run=function(blob){if(idx!==i)return;var url=URL.createObjectURL(blob);audio=new Audio(url);setSpeaking(true);audio.onended=function(){try{URL.revokeObjectURL(url);}catch(x){}setSpeaking(false);clearTimeout(advTimer);adv(idx);};var p=audio.play();if(p){p.then(function(){clearTimeout(advTimer);}).catch(function(){});}};if(cache[idx])run(cache[idx]);else fetch(TTS,{method:'POST',headers:H,body:JSON.stringify({text:text,voice:'nova'})}).then(function(r){return r.blob();}).then(function(blob){cache[idx]=blob;run(blob);}).catch(function(){});prefetch(idx+1);}
@@ -638,7 +656,7 @@ function openTour(){root.classList.remove('tour-hidden');show(0);}
 function closeTour(){stopAudio();clearTimeout(advTimer);setSpeaking(false);root.classList.add('tour-hidden');spot.style.display='none';curEl=null;try{localStorage.setItem('durango_tour_seen','1');}catch(x){}}
 el('tb-x').onclick=closeTour;
 el('tb-mute').onclick=function(){muted=!muted;el('tb-mute').innerHTML=muted?'&#128263;':'&#128266;';if(muted){stopAudio();setSpeaking(false);}else playStep(STEPS[i].text,i);};
-openB.onclick=openTour;
+window.__startTour=openTour;if(openB)openB.onclick=openTour;
 window.addEventListener('scroll',function(){if(!root.classList.contains('tour-hidden')&&curEl&&spot.style.display!=='none')positionSpot(curEl);},true);
 window.addEventListener('resize',function(){if(!root.classList.contains('tour-hidden')&&curEl&&spot.style.display!=='none')positionSpot(curEl);});
 D.addEventListener('keydown',function(e){if(!root.classList.contains('tour-hidden')&&e.key==='Escape')closeTour();});
