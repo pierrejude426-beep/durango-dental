@@ -589,7 +589,7 @@ var STEPS=[
  {sel:null,pos:'center',text:'That is your coordinator, and it is already working on this for you. Whenever you are ready, explore any tab, or tap the button in the corner and simply start talking. Welcome aboard.'}
 ];
 var root=el('tour-root'),dim=el('tour-dim'),spot=el('tour-spot'),card=el('tour-card'),txt=el('tour-text'),prog=el('tour-prog'),dots=el('tour-dots'),backB=el('tour-back'),nextB=el('tour-next'),skipB=el('tour-skip'),spk=el('tour-spk'),openB=el('tour-open');
-var i=0,audio=null,muted=false,cache={},curEl=null;
+var i=0,audio=null,muted=false,cache={},curEl=null,advTimer=null;
 function go(slug){var b=D.querySelector('.tab[data-tab="'+slug+'"]');if(b)b.click();var ts=D.querySelectorAll('.tab');for(var k=0;k<ts.length;k++){ts[k].classList.toggle('active',ts[k].getAttribute('data-tab')===slug);}var vs=D.querySelectorAll('.view');for(var j=0;j<vs.length;j++){vs[j].classList.toggle('active',vs[j].id==='v-'+slug);}}
 function clamp(n){return Math.max(0,Math.min(STEPS.length-1,n));}
 function renderDots(){var h='';for(var k=0;k<STEPS.length;k++){h+='<span class="tour-dot'+(k===i?' on':'')+'"></span>';}dots.innerHTML=h;}
@@ -611,17 +611,20 @@ function show(n){
 }
 function stopAudio(){try{if(audio){audio.pause();audio=null;}}catch(x){}}
 function playStep(text,idx){
-  stopAudio();if(muted)return;
-  var run=function(blob){if(idx!==i)return;var url=URL.createObjectURL(blob);audio=new Audio(url);audio.onended=function(){try{URL.revokeObjectURL(url);}catch(x){}if(idx===i&&!root.classList.contains('tour-hidden')&&i<STEPS.length-1)show(i+1);};var p=audio.play();if(p&&p.catch)p.catch(function(){});};
+  stopAudio();clearTimeout(advTimer);
+  var dur=Math.max(4500,text.length*68);
+  advTimer=setTimeout(function(){if(idx===i&&!root.classList.contains('tour-hidden')&&i<STEPS.length-1)show(i+1);},dur);
+  if(muted)return;
+  var run=function(blob){if(idx!==i)return;var url=URL.createObjectURL(blob);audio=new Audio(url);audio.onended=function(){try{URL.revokeObjectURL(url);}catch(x){}clearTimeout(advTimer);if(idx===i&&!root.classList.contains('tour-hidden')&&i<STEPS.length-1)show(i+1);};var p=audio.play();if(p){p.then(function(){clearTimeout(advTimer);}).catch(function(){});}};
   if(cache[idx]){run(cache[idx]);}else{fetch(TTS,{method:'POST',headers:H,body:JSON.stringify({text:text,voice:'nova'})}).then(function(r){return r.blob();}).then(function(blob){cache[idx]=blob;run(blob);}).catch(function(){});}
   prefetch(idx+1);
 }
 function prefetch(idx){if(idx>=STEPS.length||cache[idx])return;fetch(TTS,{method:'POST',headers:H,body:JSON.stringify({text:STEPS[idx].text,voice:'nova'})}).then(function(r){return r.blob();}).then(function(blob){cache[idx]=blob;}).catch(function(){});}
 function openTour(){root.classList.remove('tour-hidden');show(0);}
-function closeTour(){stopAudio();root.classList.add('tour-hidden');spot.style.display='none';curEl=null;try{localStorage.setItem('durango_tour_seen','1');}catch(x){}}
+function closeTour(){stopAudio();clearTimeout(advTimer);root.classList.add('tour-hidden');spot.style.display='none';curEl=null;try{localStorage.setItem('durango_tour_seen','1');}catch(x){}}
 openB.onclick=openTour;skipB.onclick=closeTour;backB.onclick=function(){if(i>0)show(i-1);};
 nextB.onclick=function(){if(i>=STEPS.length-1)closeTour();else show(i+1);};
-spk.onclick=function(){muted=!muted;spk.innerHTML=muted?'&#128263;':'&#128266;';if(muted)stopAudio();else playStep(STEPS[i].text,i);};
+spk.onclick=function(){muted=!muted;spk.innerHTML=muted?'&#128263;':'&#128266;';playStep(STEPS[i].text,i);};
 window.addEventListener('scroll',function(){if(!root.classList.contains('tour-hidden')&&curEl&&spot.style.display!=='none')positionSpot(curEl);},true);
 window.addEventListener('resize',function(){if(!root.classList.contains('tour-hidden')&&curEl&&spot.style.display!=='none')positionSpot(curEl);});
 D.addEventListener('keydown',function(e){if(root.classList.contains('tour-hidden'))return;if(e.key==='Escape')closeTour();else if(e.key==='ArrowRight'){if(i<STEPS.length-1)show(i+1);}else if(e.key==='ArrowLeft'){if(i>0)show(i-1);}});
