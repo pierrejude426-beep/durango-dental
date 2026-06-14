@@ -10,15 +10,19 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#eef2f7; --panel:#ffffff; --ink:#0f1b2d; --ink2:#46566b; --ink3:#7b8aa0;
-  --line:#e2e8f1; --line2:#eef2f7;
+  --bg:#f3f6fb; --panel:#ffffff; --ink:#0d1626; --ink2:#48566b; --ink3:#8593a6;
+  --line:#e6ebf2; --line2:#f0f3f9;
   --teal:#0d9488; --teal-d:#0b7c72; --teal-bg:#e6f5f3;
-  --blue:#2563eb; --blue-bg:#e8effd;
-  --green:#0f9d6b; --green-bg:#e4f6ee;
-  --amber:#c2780c; --amber-bg:#fbf0dc;
-  --red:#d4493f; --red-bg:#fbe7e5;
-  --slate:#64748b; --slate-bg:#eef1f6;
-  --shadow:0 1px 2px rgba(16,27,45,.04),0 8px 24px -14px rgba(16,27,45,.18);
+  --blue:#2563eb; --blue-bg:#eaf0fd;
+  --green:#0f9d6b; --green-bg:#e6f7ef;
+  --amber:#c2780c; --amber-bg:#fbf1de;
+  --red:#dc4a3f; --red-bg:#fce9e7;
+  --slate:#64748b; --slate-bg:#eff2f7;
+  --shadow:0 1px 2px rgba(13,22,38,.05),0 14px 36px -18px rgba(13,22,38,.24);
+  --shadow-lg:0 2px 6px rgba(13,22,38,.05),0 26px 64px -26px rgba(13,22,38,.34);
+  --radius:16px;
+  --head1:#0c1726; --head2:#0f2336; --head3:#123244;
+  --hink:#eaf1f8; --hink2:#9fb0c4; --hline:rgba(255,255,255,.1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
@@ -176,6 +180,45 @@ html,body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',syst
   .scrubgrid{grid-template-columns:1fr}
   .agent .ag{display:none}
 }
+
+/* premium skin v1 */
+.top{background:linear-gradient(120deg,var(--head1) 0%,var(--head2) 55%,var(--head3) 100%);border-bottom:none;box-shadow:0 14px 46px -22px rgba(8,14,24,.62);position:relative;z-index:5}
+.top::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(45,212,191,.55),transparent)}
+.logo{box-shadow:0 8px 22px -6px rgba(13,148,136,.75),0 0 0 1px rgba(255,255,255,.08)}
+.bname{color:var(--hink);font-size:18px;letter-spacing:-.02em}
+.bsub{color:var(--hink2)}
+.chip-sg{background:rgba(45,212,191,.15);color:#7af5e3;border:1px solid rgba(45,212,191,.3)}
+.agent .agn{color:var(--hink)}
+.agent .agd{color:var(--hink2)}
+.live{background:rgba(45,212,191,.13);border:1px solid rgba(45,212,191,.32)}
+.live .lt{color:#7af5e3}
+.prepbar{border-top:1px solid var(--hline);color:var(--hink2)}
+.prepbar b{color:var(--hink)}
+.simnote{color:var(--hink2)}
+.simnote .sd{background:#7af5e3}
+.tabs{border-bottom:1px solid var(--hline);margin-top:14px;gap:4px}
+.tab{color:var(--hink2);border-radius:9px 9px 0 0}
+.tab:hover{color:var(--hink);background:rgba(255,255,255,.05)}
+.tab.active{color:#ffffff;border-bottom-color:#2dd4bf;background:rgba(45,212,191,.08)}
+.tile{border-radius:var(--radius);box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s;position:relative;overflow:hidden}
+.tile::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),#2dd4bf);opacity:0;transition:opacity .2s}
+.tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.tile:hover::before{opacity:1}
+.tile .tv{font-size:30px;letter-spacing:-.025em}
+.card{border-radius:var(--radius);box-shadow:var(--shadow)}
+.statchip{border-radius:14px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
+.statchip:hover{transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.statchip .sv{letter-spacing:-.02em}
+.scrub{border-radius:var(--radius);box-shadow:var(--shadow)}
+.den{border-radius:14px;box-shadow:var(--shadow)}
+.letter{border-radius:12px}
+.sendbtn{background:linear-gradient(145deg,#15bdab,var(--teal));box-shadow:0 8px 20px -8px rgba(13,148,136,.6)}
+.sendbtn:hover{background:linear-gradient(145deg,#19ccb8,var(--teal-d))}
+.bar{border-radius:9px;box-shadow:inset 0 1px 2px rgba(13,22,38,.07)}
+.artrack{border-radius:7px}
+.arfill{box-shadow:inset 0 1px 1px rgba(255,255,255,.3)}
+.leak{padding:21px}
+.foot .pm{box-shadow:0 4px 10px -4px rgba(13,22,38,.4)}
 </style>
 </head>
 <body>
